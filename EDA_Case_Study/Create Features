@@ -2,27 +2,10 @@
 
 # 📘 Feature Engineering 기반 EDA 실습
 
-> **목표:** 단순한 통계 요약이 아닌, 모델링을 염두에 둔 **피처 엔지니어링 중심의 EDA(Exploratory Data Analysis)**를 수행하고  
-> 데이터의 의미를 풍부하게 확장하는 과정을 학습한다.
+## 목표: 파생 변수의 종류에 대해 알아보고 모델 기반 변수 선정에 대해 알아보자.
 
----
 
-## 🧩 1️⃣ 실험 개요
-
-이번 실습에서는 **고객 지원 수준(`support_needs`)**을 예측하기 위한 데이터셋을 바탕으로,  
-다양한 관점에서 파생 변수를 만들고(RandomForest 기반 피처 중요도 분석까지 포함)  
-EDA 과정을 **모델링 친화적 방식**으로 확장하였다.
-
-| 구분 | 내용 |
-|------|------|
-| **목표** | Feature Importance를 통해 의미 있는 특성만 선별 |
-| **핵심 개념** | Domain Feature → Interaction Feature → Statistical Feature |
-| **모델** | RandomForestClassifier (트리 기반 피처 중요도 분석용) |
-| **평가 기준** | Feature Importance 합산 및 카테고리별 영향력 비교 |
-
----
-
-## 🧱 2️⃣ 도메인 기반 피처 생성 (`create_domain_features`)
+## 🧱 도메인 기반 피처 생성 (`create_domain_features`)
 
 고객 특성(나이, 가입기간, 결제주기 등)을 활용해 **비즈니스적으로 해석 가능한 피처**를 직접 설계했다.
 
@@ -40,7 +23,7 @@ EDA 과정을 **모델링 친화적 방식**으로 확장하였다.
 
 ---
 
-## ⚙️ 3️⃣ 상호작용 및 비율 피처 (`create_interaction_features`)
+## ⚙️ 상호작용 및 비율 피처 (`create_interaction_features`)
 
 변수 간 관계를 모델이 직접 학습하지 않아도 되게끔,  
 **명시적 interaction 및 비율형 피처**를 추가했다.
@@ -54,7 +37,7 @@ EDA 과정을 **모델링 친화적 방식**으로 확장하였다.
 
 ---
 
-## 📊 4️⃣ 통계 기반 피처 (`create_statistical_features`)
+## 📊 통계 기반 피처 (`create_statistical_features`)
 
 `subscription_type` 그룹별 평균/표준편차를 계산하여,  
 개별 고객의 값이 그 그룹에서 얼마나 벗어났는지를 `z-score` 형태로 표현했다.
@@ -69,7 +52,7 @@ EDA 과정을 **모델링 친화적 방식**으로 확장하였다.
 
 ---
 
-## 🌲 5️⃣ Feature Importance 분석
+## 🌲 Feature Importance 분석
 
 랜덤포레스트 모델로 모든 피처를 학습시켜 중요도를 계산했다.
 
@@ -80,4 +63,4 @@ feature_importance = pd.DataFrame({
     'feature': feature_cols,
     'importance': rf.feature_importances_
 }).sort_values('importance', ascending=False)
-
+```
