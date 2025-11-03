@@ -1,0 +1,83 @@
+# 2025-11-04 Study Log
+
+# 📘 Feature Engineering 기반 EDA 실습
+
+> **목표:** 단순한 통계 요약이 아닌, 모델링을 염두에 둔 **피처 엔지니어링 중심의 EDA(Exploratory Data Analysis)**를 수행하고  
+> 데이터의 의미를 풍부하게 확장하는 과정을 학습한다.
+
+---
+
+## 🧩 1️⃣ 실험 개요
+
+이번 실습에서는 **고객 지원 수준(`support_needs`)**을 예측하기 위한 데이터셋을 바탕으로,  
+다양한 관점에서 파생 변수를 만들고(RandomForest 기반 피처 중요도 분석까지 포함)  
+EDA 과정을 **모델링 친화적 방식**으로 확장하였다.
+
+| 구분 | 내용 |
+|------|------|
+| **목표** | Feature Importance를 통해 의미 있는 특성만 선별 |
+| **핵심 개념** | Domain Feature → Interaction Feature → Statistical Feature |
+| **모델** | RandomForestClassifier (트리 기반 피처 중요도 분석용) |
+| **평가 기준** | Feature Importance 합산 및 카테고리별 영향력 비교 |
+
+---
+
+## 🧱 2️⃣ 도메인 기반 피처 생성 (`create_domain_features`)
+
+고객 특성(나이, 가입기간, 결제주기 등)을 활용해 **비즈니스적으로 해석 가능한 피처**를 직접 설계했다.
+
+| 피처 그룹 | 예시 | 의미 |
+|------------|------|------|
+| 고객 세그먼트 | `age_group`, `loyalty_level` | 고객 연령대 및 충성도 구간화 |
+| 고객 가치 | `subscription_value`, `customer_lifetime_value` | 상품 가치와 계약 기간을 통한 고객 Lifetime Value |
+| 활동성 지표 | `interaction_rate`, `activity_intensity` | 이용 빈도와 상호작용 강도 조합 |
+| 결제 관련 | `monthly_payment_frequency`, `tenure_contract_ratio` | 결제 주기와 계약 기간 비율 |
+| 복합지표 | `is_high_value`, `churn_risk` | VIP 여부 및 이탈 위험 예측 지표 |
+
+**→ 요약:**  
+이 단계는 데이터에 의미적 풍부함을 더하기 위한 ‘도메인 감각형 EDA’다.  
+단순 수치 조합이 아니라, 실제 고객 행동 패턴을 반영하도록 설계되었다.
+
+---
+
+## ⚙️ 3️⃣ 상호작용 및 비율 피처 (`create_interaction_features`)
+
+변수 간 관계를 모델이 직접 학습하지 않아도 되게끔,  
+**명시적 interaction 및 비율형 피처**를 추가했다.
+
+| 유형 | 예시 | 목적 |
+|------|------|------|
+| 수치형 간 | `age * tenure`, `payment_interval * frequent` | 장기 고객의 활동성 효과 반영 |
+| 범주형-수치형 | `gender_encoded * age`, `subscription_encoded * frequent` | 성별·구독유형에 따른 행동 차이 |
+| 비율형 | `age_tenure_ratio`, `payment_tenure_ratio` | 성장 속도 및 소비 주기 비교 |
+| 다항항 | `after_interaction_squared` | 비선형 관계(활동성 급증 등) 반영 |
+
+---
+
+## 📊 4️⃣ 통계 기반 피처 (`create_statistical_features`)
+
+`subscription_type` 그룹별 평균/표준편차를 계산하여,  
+개별 고객의 값이 그 그룹에서 얼마나 벗어났는지를 `z-score` 형태로 표현했다.
+
+| 계산 항목 | 예시 | 해석 |
+|------------|------|------|
+| 그룹 통계 | `subscription_age_mean`, `subscription_tenure_std` | 구독유형별 평균/표준편차 |
+| 상대적 위치 | `age_zscore`, `tenure_zscore` | 해당 그룹에서의 상대적 위치 |
+
+**→ 요약:**  
+단순 평균값이 아닌 “**해당 그룹 내에서의 특이성**”을 측정한 고급형 피처 설계.
+
+---
+
+## 🌲 5️⃣ Feature Importance 분석
+
+랜덤포레스트 모델로 모든 피처를 학습시켜 중요도를 계산했다.
+
+```python
+rf = RandomForestClassifier(n_estimators=100, random_state=42, n_jobs=-1)
+rf.fit(X, y)
+feature_importance = pd.DataFrame({
+    'feature': feature_cols,
+    'importance': rf.feature_importances_
+}).sort_values('importance', ascending=False)
+
