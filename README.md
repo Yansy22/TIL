@@ -26,6 +26,7 @@
 ### 4. 머신러닝 & 빅데이터 (ML & Big Data)
 * [**ML / AI Theory (이론)**](./ML_Theory/)
 * [**Big Data (Spark)**](./Big_Data/)
+* [**Pattern Recognition and Machine Learning**](./PRML/)
 
 ### 5. 기타 (Etc)
 * [**Git / GitHub**](./Git_GitHub/)
