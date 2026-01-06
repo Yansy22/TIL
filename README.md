@@ -15,7 +15,7 @@
 * [**ML / AI Theory (이론)**](./ML_Theory/)
 * [**Pattern Recognition and Machine Learning**](./PRML/)
 
-### 5. 컴퓨터 (Etc)
+### 5. 컴퓨터 (Computer)
 * [**CS / OS**](./CS_OS/)
 
 ### 6. 기타 (Etc)
