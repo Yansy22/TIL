@@ -6,6 +6,7 @@
 
 ### 2. 데이터 분석 (Data Analysis)
 * [**EDA (탐색적 데이터 분석)**](./EDA_Case_Study/)
+* [**Statistics (통계)**](./Statistics/)
 
 ### 3. 데이터 시각화 (Data Visualization)
 * [**Tableau**](./Tableau/)
